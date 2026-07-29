@@ -3,7 +3,9 @@ import { useState } from 'react'
 const ABAS = [
   { k: 'jogos', lbl: 'Presenças', unidade: 'jogos', get: (j) => j.jogos || 0 },
   { k: 'vitorias', lbl: 'Vitórias', unidade: 'vitórias', get: (j) => j.vitorias || 0 },
-  { k: 'nota', lbl: 'Avaliação', unidade: 'nota', get: (j) => (j.notaQtd ? j.notaSoma / j.notaQtd : 0) },
+  { k: 'craques', lbl: 'Craque', unidade: 'vezes', get: (j) => j.craques || 0 },
+  { k: 'ratos', lbl: '🐀 Rato', unidade: 'vezes', get: (j) => j.ratos || 0 },
+  { k: 'nota', lbl: 'Nota', unidade: 'nota', get: (j) => (j.notaQtd ? j.notaSoma / j.notaQtd : 0) },
 ]
 
 export default function Ranking({ jogadores }) {
@@ -27,7 +29,7 @@ export default function Ranking({ jogadores }) {
           <div className={`rank-row ${i < 3 ? 'p' + (i + 1) : ''}`} key={j.id}>
             <div className="rank-pos">{i + 1}º</div>
             <div className="info">
-              <div className="nome">{j.nome}{aba === 'nota' && j.notaQtd ? <span className="stars"> {'★'.repeat(Math.round(v))}</span> : null}</div>
+              <div className="nome">{j.nome}{aba === 'ratos' && v > 0 ? ' 🐀' : ''}{aba === 'craques' && v > 0 ? ' ⭐' : ''}</div>
               <div className="rank-bar"><i style={{ width: `${Math.round((v / max) * 100)}%` }} /></div>
             </div>
             <div className="rank-count"><b>{txt}</b><span>{conf.unidade}</span></div>

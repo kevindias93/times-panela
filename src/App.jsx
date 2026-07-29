@@ -9,6 +9,7 @@ import PeDeRato from './components/PeDeRato'
 import EncerrarPartida from './components/EncerrarPartida'
 import Historico from './components/Historico'
 import Importar from './components/Importar'
+import { IconPresenca, IconTimes, IconRanking, IconPremio, IconHistorico } from './components/Icons'
 import { sortearTimes, maxTimes, faltando, ROTULO_POSICAO, mediaHab, qtdHab } from './lib/sorteio'
 import logo from './assets/logo.png'
 
@@ -156,26 +157,38 @@ export default function App() {
     const id = auth.currentUser?.uid
     if (id) await updateDoc(VOTACAO_REF, { [`votos.${id}`]: alvoId })
   }
+  async function votarCraque(alvoId) {
+    try { await garantirLogin() } catch { return }
+    const id = auth.currentUser?.uid
+    if (id) await updateDoc(VOTACAO_REF, { [`votosCraque.${id}`]: alvoId })
+  }
 
   async function recomecar() {
     if (!confirm('Recomeçar? Cancela o sorteio/partida atual e libera um novo jogo. As presenças e o histórico continuam.')) return
     const batch = writeBatch(db)
     batch.set(SORTEIO_REF, { gerado: false, times: [], banco: [], nTimes: 0 })
-    batch.set(VOTACAO_REF, { aberta: false, votos: {} })
+    batch.set(VOTACAO_REF, { aberta: false, votos: {}, votosCraque: {} })
     try { await batch.commit(); setEncerrando(false); setAba('presenca') }
     catch (e) { alert('Não deu pra recomeçar.\nCódigo: ' + (e?.code || '?')) }
   }
 
   async function coroar() {
-    const votos = votacao?.votos || {}
-    const lista = Object.values(votos)
-    let ratoNome = '', ratoFotoURL = '', max = 0
-    if (lista.length) {
+    function apurar(mapa) {
+      const lista = Object.values(mapa || {})
+      if (!lista.length) return { nome: '', foto: '', max: 0, id: null }
       const cont = {}; lista.forEach((id) => { cont[id] = (cont[id] || 0) + 1 })
-      let vid = null; for (const [id, n] of Object.entries(cont)) if (n > max) { max = n; vid = id }
-      const v = jogadores.find((j) => j.id === vid); ratoNome = v?.nome || '?'; ratoFotoURL = v?.fotoURL || ''
+      let vid = null, max = 0
+      for (const [id, n] of Object.entries(cont)) if (n > max) { max = n; vid = id }
+      const v = jogadores.find((j) => j.id === vid)
+      return { nome: v?.nome || '?', foto: v?.fotoURL || '', max, id: vid }
     }
-    if (!confirm(lista.length ? `Coroar ${ratoNome} (${max} votos) e encerrar a noite?` : 'Ninguém votou. Encerrar a noite mesmo assim?')) return
+    const rato = apurar(votacao?.votos)
+    const craque = apurar(votacao?.votosCraque)
+    const resumo = [
+      craque.id ? `⭐ Craque: ${craque.nome} (${craque.max})` : '⭐ Craque: sem votos',
+      rato.id ? `🐀 Rato: ${rato.nome} (${rato.max})` : '🐀 Rato: sem votos',
+    ].join('\n')
+    if (!confirm(`Coroar e encerrar a noite?\n\n${resumo}`)) return
 
     const batch = writeBatch(db)
     batch.set(doc(collection(db, 'historico')), {
@@ -183,9 +196,9 @@ export default function App() {
       placar: votacao?.placar || null,
       vencedor: votacao?.vencedor || 'empate',
       fotoTimeURL: votacao?.fotoTimeURL || '',
-      ratoNome, ratoFotoURL, votos: max,
+      ratoNome: rato.nome && rato.id ? rato.nome : '', ratoFotoURL: rato.foto, votos: rato.max,
+      craqueNome: craque.nome && craque.id ? craque.nome : '', craqueFotoURL: craque.foto, craqueVotos: craque.max,
     })
-    // vitórias pro time vencedor
     const venc = votacao?.vencedor
     const idxVenc = venc === 'time1' ? 0 : venc === 'time2' ? 1 : -1
     const vencedores = idxVenc >= 0 ? new Set((sorteio?.times?.[idxVenc]?.jogadores || []).map((p) => p.id)) : new Set()
@@ -196,12 +209,14 @@ export default function App() {
       const upd = { jogos: (j.jogos || 0) + 1 }
       if (vencedores.has(j.id)) upd.vitorias = (j.vitorias || 0) + 1
       if (avaliacoes[j.id]) { upd.notaSoma = (j.notaSoma || 0) + avaliacoes[j.id]; upd.notaQtd = (j.notaQtd || 0) + 1 }
+      if (j.id === rato.id) upd.ratos = (j.ratos || 0) + 1
+      if (j.id === craque.id) upd.craques = (j.craques || 0) + 1
       batch.update(doc(db, 'jogadores', j.id), upd)
     })
     jogadores.filter((j) => j.avulso).forEach((j) => batch.delete(doc(db, 'jogadores', j.id)))
     jogadores.filter((j) => !j.avulso && j.confirmado).forEach((j) => batch.update(doc(db, 'jogadores', j.id), { confirmado: false }))
     batch.set(SORTEIO_REF, { gerado: false, times: [], banco: [], nTimes: 0 })
-    batch.set(VOTACAO_REF, { aberta: false, votos: {} })
+    batch.set(VOTACAO_REF, { aberta: false, votos: {}, votosCraque: {} })
     try { await batch.commit(); setAba('historico') }
     catch (e) { console.error(e); alert('Não consegui encerrar a noite.\nCódigo: ' + (e?.code || '?')) }
   }
@@ -287,16 +302,21 @@ export default function App() {
       )}
 
       {aba === 'ranking' && <Ranking jogadores={jogadores} />}
-      {aba === 'rato' && <PeDeRato participantes={participantes} votacao={votacao} historico={historico} uid={uid} onVotar={votar} onCoroar={coroar} />}
+      {aba === 'rato' && <PeDeRato participantes={participantes} votacao={votacao} historico={historico} uid={uid} onVotarRato={votar} onVotarCraque={votarCraque} onCoroar={coroar} />}
       {aba === 'historico' && (<><div className="section-title">Histórico de jogos</div><Historico historico={historico} /></>)}
 
       <nav className="nav"><div className="nav-inner">
-        {[['presenca', '⚽', 'Presença'], ['times', '🔀', 'Times'], ['ranking', '📊', 'Ranking'], ['rato', '🐀', 'Pé de rato'], ['historico', '📅', 'Histórico']]
-          .map(([k, ic, lbl]) => (
-            <button key={k} className={aba === k ? 'active' : ''} onClick={() => { setAba(k); setEditando(null); window.scrollTo({ top: 0 }) }}>
-              <span className="ic">{ic}</span>{lbl}
-            </button>
-          ))}
+        {[
+          ['presenca', IconPresenca, 'Presença'],
+          ['times', IconTimes, 'Times'],
+          ['ranking', IconRanking, 'Ranking'],
+          ['rato', IconPremio, 'Prêmios'],
+          ['historico', IconHistorico, 'Histórico'],
+        ].map(([k, Icon, lbl]) => (
+          <button key={k} className={aba === k ? 'active' : ''} onClick={() => { setAba(k); setEditando(null); window.scrollTo({ top: 0 }) }}>
+            <span className="ic"><Icon /></span>{lbl}
+          </button>
+        ))}
       </div></nav>
     </div>
   )
