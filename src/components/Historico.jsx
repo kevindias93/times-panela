@@ -14,6 +14,12 @@ export default function Historico({ historico }) {
               <span className="hist-placar">{h.placar ? `${h.placar.t1} x ${h.placar.t2}` : ''}</span>
             </div>
             <div className="hist-venc">🏆 {h.vencedor === 'empate' ? 'Empate' : `Vitória do Time ${h.vencedor === 'time1' ? '1' : '2'}`}</div>
+            {h.craqueNome && (
+              <div className="hist-rato">
+                {h.craqueFotoURL ? <img src={h.craqueFotoURL} alt={h.craqueNome} /> : <span className="mini-av" style={{ background: '#F5B841', color: '#241500' }}>{iniciais(h.craqueNome)}</span>}
+                ⭐ Craque: <b>{h.craqueNome}</b> ({h.craqueVotos} {h.craqueVotos === 1 ? 'voto' : 'votos'})
+              </div>
+            )}
             {h.ratoNome && (
               <div className="hist-rato">
                 {h.ratoFotoURL ? <img src={h.ratoFotoURL} alt={h.ratoNome} /> : <span className="mini-av">{iniciais(h.ratoNome)}</span>}
