@@ -1,0 +1,193 @@
+:root{
+  --navy-900:#0A1A30; --navy-800:#10233F; --navy-700:#173157;
+  --line:#254272; --cream:#F3E9CC; --muted:#8FA6C8;
+  --gold:#F5B841; --gold-ink:#2A1E00; --red:#C22030;
+  --gol:#FFD24A; --zag:#4FA3FF; --mei:#55C98A; --ata:#FF6B57;
+  --danger:#E5484D; --radius:16px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:radial-gradient(120% 60% at 50% -10%,#16305a 0%,var(--navy-900) 55%); color:var(--cream); font-family:'Inter',system-ui,sans-serif; min-height:100dvh; -webkit-font-smoothing:antialiased}
+button{font-family:inherit; cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
+.app{max-width:440px; margin:0 auto; padding:0 16px calc(96px + env(safe-area-inset-bottom))}
+
+/* topo */
+.top{text-align:center; padding:18px 0 8px}
+.top img{width:140px; height:auto; margin:0 auto; display:block; filter:drop-shadow(0 8px 20px rgba(0,0,0,.5))}
+.top .slogan{font-size:12px; color:var(--muted); font-style:italic; margin:2px 0 0}
+.top .slogan b{color:var(--gold); font-style:normal}
+
+/* placar */
+.status{display:flex; gap:10px; margin:14px 0 6px}
+.stat{flex:1; background:var(--navy-800); border:1px solid var(--line); border-radius:var(--radius); padding:12px 14px; text-align:center}
+.stat .num{font-family:'Anton'; font-size:30px; line-height:1; color:var(--gold)}
+.stat .lbl{font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-top:3px}
+
+.section-title{font-family:'Anton'; font-size:14px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin:22px 4px 12px}
+
+/* jogadores */
+.player{display:flex; align-items:center; gap:12px; background:var(--navy-700); border:1px solid var(--line); border-radius:14px; padding:10px 12px; margin-bottom:8px}
+.player.on{border-color:var(--gold); background:#183a63}
+.avatar{width:46px; height:46px; border-radius:50%; object-fit:cover; flex-shrink:0; display:grid; place-items:center; font-family:'Anton'; font-size:17px; color:#07160f; background:var(--navy-800)}
+.info{flex:1; min-width:0}
+.nome{font-weight:700; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.meta{display:flex; align-items:center; gap:8px; margin-top:3px}
+.pos-tag{font-size:11px; font-weight:800; letter-spacing:1px; padding:2px 7px; border-radius:6px; color:#07160f}
+.pos-GOL{background:var(--gol)} .pos-ZAG{background:var(--zag)} .pos-MEI{background:var(--mei)} .pos-ATA{background:var(--ata)}
+.stars{color:var(--gold); font-size:12px; letter-spacing:1px}
+.avulso-tag{font-size:10px; color:var(--muted); border:1px solid var(--line); border-radius:5px; padding:1px 5px}
+.toggle{border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:10px; padding:9px 12px; font-weight:700; font-size:13px; white-space:nowrap}
+.toggle.on{background:var(--gold); color:var(--gold-ink); border-color:var(--gold)}
+
+/* botões */
+.btn{width:100%; border:none; border-radius:14px; padding:16px; font-family:'Anton'; font-size:20px; letter-spacing:1px; text-transform:uppercase}
+.btn.primary{background:var(--gold); color:var(--gold-ink)}
+.btn.primary:disabled{background:var(--navy-700); color:var(--muted); cursor:not-allowed}
+.btn.danger{background:var(--red); color:#fff}
+.btn.ghost{background:transparent; color:var(--muted); border:1px solid var(--line); font-family:'Inter'; font-size:14px; letter-spacing:0; font-weight:600; text-transform:none; padding:12px}
+.hint{text-align:center; color:var(--muted); font-size:13px; margin:10px 4px 0}
+
+/* formulário */
+.form{background:var(--navy-800); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-bottom:8px}
+.form .row{display:flex; gap:10px}
+.field{margin-bottom:12px; flex:1}
+.field label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:1px}
+.input,select{width:100%; background:var(--navy-900); color:var(--cream); border:1px solid var(--line); border-radius:10px; padding:12px; font-size:15px}
+.foto-pick{display:flex; align-items:center; gap:12px}
+.foto-pick .prev{width:56px; height:56px; border-radius:50%; object-fit:cover; background:var(--navy-900); border:1px solid var(--line)}
+.foto-pick label.file{font-size:13px; color:var(--gold); border:1px dashed var(--line); border-radius:10px; padding:10px 14px; cursor:pointer}
+.foto-pick input[type=file]{display:none}
+.skill-pick{display:flex; gap:6px}
+.skill-pick button{flex:1; background:var(--navy-900); border:1px solid var(--line); color:var(--muted); border-radius:8px; padding:8px 0; font-weight:700}
+.skill-pick button.sel{background:var(--gold); color:var(--gold-ink); border-color:var(--gold)}
+
+/* gate */
+.gate{min-height:100dvh; display:grid; place-items:center; padding:24px}
+.gate .box{width:100%; max-width:360px; text-align:center}
+.gate img{width:150px; margin:0 auto 6px; display:block}
+.gate p{color:var(--muted); margin:0 0 22px}
+.err{color:var(--ata); font-size:13px; margin-top:10px; min-height:18px}
+
+/* escalação */
+.times-wrap{display:grid; gap:16px}
+.time-card{border-radius:var(--radius); overflow:hidden; border:1px solid var(--line)}
+.time-head{display:flex; justify-content:space-between; align-items:center; padding:12px 14px; color:#fff}
+.time-head h3{font-family:'Anton'; font-size:22px; margin:0; letter-spacing:1px}
+.time-head .forca{font-size:12px; opacity:.9}
+.pitch{position:relative; background:repeating-linear-gradient(0deg,transparent 0 26px,rgba(255,255,255,.03) 26px 52px),linear-gradient(180deg,#0d3b2a,#0a2e20); padding:16px 6px 20px}
+.pitch::before{content:''; position:absolute; left:10%; right:10%; top:50%; border-top:1px dashed rgba(255,255,255,.18)}
+.linha{display:flex; justify-content:center; gap:14px; margin:10px 0}
+.spot{text-align:center; width:58px}
+.spot .ball{width:44px; height:44px; border-radius:50%; margin:0 auto 4px; object-fit:cover; display:grid; place-items:center; font-family:'Anton'; font-size:15px; border:2px solid rgba(255,255,255,.55); background:#082117}
+.spot .nm{font-size:11px; color:#eafff4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.banco{margin-top:6px}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{font-size:12px; background:var(--navy-700); border:1px solid var(--line); border-radius:8px; padding:5px 9px}
+
+/* ranking */
+.rank-row{display:flex; align-items:center; gap:12px; background:var(--navy-700); border:1px solid var(--line); border-radius:14px; padding:10px 12px; margin-bottom:8px}
+.rank-pos{font-family:'Anton'; font-size:22px; width:34px; text-align:center; color:var(--muted)}
+.rank-row.p1 .rank-pos{color:var(--gold)} .rank-row.p2 .rank-pos{color:#cfd6e0} .rank-row.p3 .rank-pos{color:#d08a4a}
+.rank-bar{height:6px; background:var(--navy-800); border-radius:4px; margin-top:6px; overflow:hidden}
+.rank-bar>i{display:block; height:100%; background:linear-gradient(90deg,var(--gold),#ffd98a)}
+.rank-count{text-align:right}
+.rank-count b{font-family:'Anton'; font-size:20px; color:var(--cream)}
+.rank-count span{display:block; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px}
+
+/* pé de rato */
+.rato-card{position:relative; border-radius:20px; overflow:hidden; padding:26px 18px 22px; text-align:center; background:linear-gradient(150deg,#3a1050 0%,#7d1e6a 45%,#c21f5b 100%); border:1px solid rgba(255,255,255,.14); box-shadow:0 20px 50px rgba(120,20,90,.4)}
+.rato-card::after{content:''; position:absolute; inset:0; background:radial-gradient(80% 50% at 50% 0%,rgba(255,255,255,.18),transparent 60%); pointer-events:none}
+.rato-title{font-family:'Bangers'; font-size:clamp(32px,10vw,46px); line-height:.9; letter-spacing:2px; color:#fff; text-shadow:2px 3px 0 rgba(0,0,0,.35); transform:rotate(-3deg); margin:0 0 4px}
+.rato-sub{font-family:'Bangers'; font-size:20px; letter-spacing:2px; color:#ffd24a; text-shadow:1px 2px 0 rgba(0,0,0,.35)}
+.rato-win{display:flex; align-items:center; gap:14px; justify-content:center; margin:18px 0 6px; background:rgba(0,0,0,.28); border-radius:16px; padding:14px}
+.rato-win .face{width:64px; height:64px; border-radius:50%; object-fit:cover; display:grid; place-items:center; font-family:'Anton'; font-size:24px; background:#e5484d; color:#fff; border:3px solid #fff}
+.rato-win .who{text-align:left}
+.rato-win .who .n{font-family:'Anton'; font-size:24px; color:#fff; line-height:1}
+.rato-win .who .v{font-size:12px; color:#ffd7ec; margin-top:4px}
+.rato-quote{font-size:13px; color:#ffe3f2; margin:12px 6px 0; font-style:italic}
+.vote-opt{display:flex; align-items:center; gap:12px; background:var(--navy-700); border:1px solid var(--line); border-radius:14px; padding:10px 12px; margin-bottom:8px; cursor:pointer}
+.vote-opt.sel{border-color:var(--red); background:#2a1420}
+.vote-opt .radio{width:20px; height:20px; border-radius:50%; border:2px solid var(--line); flex-shrink:0}
+.vote-opt.sel .radio{border-color:var(--red); background:var(--red); box-shadow:inset 0 0 0 3px #2a1420}
+.vote-count{margin-left:auto; font-family:'Anton'; font-size:18px; color:var(--gold)}
+.past{display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted); padding:8px 4px; border-bottom:1px solid var(--line)}
+.past b{color:var(--cream)}
+
+/* nav */
+.nav{position:fixed; left:0; right:0; bottom:0; z-index:20}
+.nav-inner{max-width:440px; margin:0 auto; display:flex; background:rgba(10,20,35,.94); backdrop-filter:blur(10px); border-top:1px solid var(--line); padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+.nav button{flex:1; background:none; border:none; color:var(--muted); font-size:11px; font-weight:600; display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 0}
+.nav button .ic{font-size:20px}
+.nav button.active{color:var(--gold)}
+
+/* ===== escalação estilo video game ===== */
+.gp{border-radius:16px; overflow:hidden; margin-bottom:18px; border:2px solid #05101f; box-shadow:0 12px 30px rgba(0,0,0,.45); background:linear-gradient(180deg,#0c2036,#0a1626)}
+.gp-top{display:flex; align-items:center; gap:10px; padding:10px 12px; position:relative; color:#fff}
+.gp-top::after{content:''; position:absolute; left:0; right:0; bottom:0; height:2px; background:rgba(255,255,255,.25)}
+.gp-top .dot{width:22px; height:22px; border-radius:6px; border:2px solid rgba(255,255,255,.7); flex-shrink:0}
+.gp-name{font-family:'Anton'; font-size:20px; letter-spacing:1px; flex:1}
+.gp-form{font-family:'Anton'; font-size:16px; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.3); border-radius:8px; padding:2px 10px; letter-spacing:2px}
+.gp-pitch{position:relative; aspect-ratio:16/10; margin:10px; border-radius:10px; overflow:hidden; background-image:repeating-linear-gradient(90deg,#2f7d3f 0 26px,#2a723a 26px 52px); border:2px solid rgba(255,255,255,.5)}
+.gp-pitch .cline{position:absolute; top:6%; bottom:6%; left:50%; width:2px; background:rgba(255,255,255,.6)}
+.gp-pitch .ccircle{position:absolute; top:50%; left:50%; width:64px; height:64px; margin:-32px 0 0 -32px; border:2px solid rgba(255,255,255,.6); border-radius:50%}
+.gp-pitch .pbox{position:absolute; top:26%; height:48%; width:15%; border:2px solid rgba(255,255,255,.55)}
+.gp-pitch .pbox.l{left:0; border-left:none} .gp-pitch .pbox.r{right:0; border-right:none}
+.chip{position:absolute; transform:translate(-50%,-50%); text-align:center; width:52px}
+.chip .bk{width:34px; height:34px; border-radius:50%; margin:0 auto; display:grid; place-items:center; font-family:'Anton'; font-size:15px; color:#fff; border:2px solid #fff; box-shadow:0 3px 6px rgba(0,0,0,.4); overflow:hidden}
+.chip .bk img{width:100%; height:100%; object-fit:cover}
+.chip .cnm{font-size:9px; color:#fff; text-shadow:0 1px 2px #000; margin-top:2px; white-space:nowrap}
+.gp-roster{padding:4px 10px 10px}
+.gp-row{display:flex; align-items:center; gap:10px; padding:8px; border-bottom:1px solid rgba(255,255,255,.06)}
+.gp-row:last-child{border-bottom:none}
+.gp-row .rn{font-family:'Anton'; font-size:16px; width:26px; text-align:center; color:#cfe0ff}
+.gp-row .rname{flex:1; font-weight:600; font-size:15px; color:#eef4ff}
+.gp-row .cap{font-family:'Anton'; font-size:11px; color:#0a1626; background:var(--gold); border-radius:4px; padding:1px 5px; margin-left:4px}
+.gp-row .rp{font-family:'Anton'; font-size:12px; letter-spacing:1px; color:#fff; border-radius:6px; padding:3px 8px; min-width:44px; text-align:center}
+.gp-foot{padding:8px 12px; font-size:12px; color:#9fb4d6; text-align:right; background:rgba(0,0,0,.25)}
+
+/* ===== gerador do card pé de rato ===== */
+.card-tools{background:var(--navy-800); border:1px solid var(--line); border-radius:16px; padding:14px; margin-bottom:14px}
+.file-btn{display:block; text-align:center; font-size:14px; color:var(--gold); border:1px dashed var(--line); border-radius:12px; padding:14px; cursor:pointer}
+.file-btn input{display:none}
+.card-tools input.txt{width:100%; background:var(--navy-900); color:var(--cream); border:1px solid var(--line); border-radius:10px; padding:12px; font-size:15px; margin-top:10px}
+.card-canvas{width:100%; border-radius:16px; display:block; margin-top:12px; box-shadow:0 16px 40px rgba(120,20,90,.45)}
+
+/* ===== v2: extras ===== */
+.pos-tag2{font-size:10px;font-weight:800;letter-spacing:1px;padding:2px 6px;border-radius:6px;color:var(--muted);border:1px dashed var(--line)}
+.toggle.mini{padding:8px 10px;font-size:14px;line-height:1}
+.nav-inner button{font-size:10px}
+
+/* abas de ranking */
+.rank-tabs{display:flex;gap:6px;margin-bottom:12px}
+.rank-tabs button{flex:1;background:var(--navy-800);border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:9px 0;font-weight:700;font-size:13px;font-family:inherit}
+.rank-tabs button.on{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}
+
+/* placar */
+.placar{display:flex;align-items:flex-end;justify-content:center;gap:16px}
+.placar .pl{text-align:center}
+.placar .pl span{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.placar .pl input{width:84px;background:var(--navy-900);color:var(--cream);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:'Anton';font-size:34px;text-align:center}
+.placar .x{font-family:'Anton';font-size:26px;color:var(--muted);padding-bottom:12px}
+.aval-row{display:flex;align-items:center;gap:10px;background:var(--navy-700);border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin-bottom:6px}
+
+/* histórico */
+.hist-card{background:var(--navy-700);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:12px}
+.hist-foto{width:100%;height:200px;object-fit:cover;display:block}
+.hist-body{padding:12px 14px}
+.hist-top{display:flex;justify-content:space-between;align-items:center}
+.hist-data{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.hist-placar{font-family:'Anton';font-size:24px;color:var(--cream)}
+.hist-venc{font-weight:700;color:var(--gold);margin-top:4px}
+.hist-rato{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-top:8px}
+.hist-rato img,.hist-rato .mini-av{width:28px;height:28px;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:#e5484d;color:#fff;font-family:'Anton';font-size:12px}
+
+/* estrelas de avaliação (média da galera) */
+.rate{display:flex;align-items:center;gap:1px;margin-top:5px;flex-wrap:wrap}
+.rate .star{background:none;border:none;padding:0 1px;font-size:17px;line-height:1;color:#2b436f;cursor:pointer}
+.rate .star.on{color:var(--gold)}
+.rate .star.meu{text-decoration:underline;text-decoration-color:#fff}
+.rate-info{font-size:11px;color:var(--muted);margin-left:6px}
+
+/* importador de lista */
+.import-area{width:100%;min-height:280px;background:var(--navy-900);color:var(--cream);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.6;resize:vertical}
