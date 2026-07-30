@@ -19,7 +19,7 @@ function urlIA(prompt, seed) {
   return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1080&height=1350&nologo=true&seed=${seed}`
 }
 
-export default function CardPremio({ tema = 'rato', nomeInicial = '', votosInicial = '' }) {
+export default function CardPremio({ tema = 'rato', nomeInicial = '', votosInicial = '', fotoInicial = '' }) {
   const t = TEMAS[tema] || TEMAS.rato
   const canvasRef = useRef(null), fotoRef = useRef(null), logoRef = useRef(null), fundoRef = useRef(null)
   const [nome, setNome] = useState(nomeInicial)
@@ -27,6 +27,22 @@ export default function CardPremio({ tema = 'rato', nomeInicial = '', votosInici
   const [gerandoIA, setGerandoIA] = useState(false)
 
   useEffect(() => { const img = new Image(); img.onload = () => { logoRef.current = img; desenhar() }; img.src = logo }, []) // eslint-disable-line
+  // carrega automaticamente a foto do premiado (via fetch/blob pra não travar o download)
+  useEffect(() => {
+    if (!fotoInicial) return
+    let vivo = true
+    ;(async () => {
+      try {
+        const resp = await fetch(fotoInicial)
+        if (!resp.ok) return
+        const blob = await resp.blob()
+        const img = new Image()
+        img.onload = () => { if (vivo) { fotoRef.current = img; desenhar() } }
+        img.src = URL.createObjectURL(blob)
+      } catch { /* sem foto automática; dá pra escolher manual */ }
+    })()
+    return () => { vivo = false }
+  }, [fotoInicial]) // eslint-disable-line
   useEffect(() => { desenhar() })
 
   function cover(ctx, img, x, y, w, h) {

@@ -1,4 +1,4 @@
-import CardPremio from './CardPremio'
+import { useState } from 'react'
 
 const ini = (n) => (n || '?').split(' ').filter(Boolean).slice(0, 2).map((x) => x[0]?.toUpperCase()).join('')
 const dataBR = (ts) => { try { return new Date(ts).toLocaleDateString('pt-BR') } catch { return '' } }
@@ -24,19 +24,33 @@ function Votacao({ titulo, participantes, votos, uid, onVotar, cor }) {
   )
 }
 
-function CampeaoCard({ tema, ultimo, campo, fotoCampo, votosCampo }) {
-  const nome = ultimo?.[campo]
+// Mural clicável: toca no premiado e abre a foto grande com data e votos.
+function Mural({ titulo, itens, emoji, corAv }) {
+  const [aberto, setAberto] = useState(null)
+  if (!itens.length) return null
   return (
-    <div className={`rato-card ${tema === 'craque' ? 'ouro' : ''}`}>
-      <h2 className="rato-title">{tema === 'craque' ? <>Craque<br />da Rodada!</> : <>Pé de Rato<br />da Rodada!</>}</h2>
-      <div className="rato-sub">{tema === 'craque' ? '⭐' : '🐀'} 🏆 {nome ? 'último vencedor' : 'sem coroado ainda'} 🏆 {tema === 'craque' ? '⭐' : '🐀'}</div>
-      {nome ? (
-        <div className="rato-win">
-          {ultimo[fotoCampo] ? <img className="face" src={ultimo[fotoCampo]} alt={nome} /> : <div className="face">{ini(nome)}</div>}
-          <div className="who"><div className="n">{nome}</div><div className="v">{ultimo[votosCampo]} {ultimo[votosCampo] === 1 ? 'voto' : 'votos'}</div></div>
+    <>
+      <div className="section-title">{titulo}</div>
+      {itens.map((it) => (
+        <div key={it.id}>
+          <div className="gal-row mural-item" onClick={() => setAberto(aberto === it.id ? null : it.id)}>
+            {it.foto ? <img src={it.foto} alt={it.nome} /> : <span className="gal-av" style={{ background: corAv }}>{ini(it.nome)}</span>}
+            <div className="gal-info">
+              <div className="gal-nome">{emoji} {it.nome}</div>
+              <div className="gal-meta">{dataBR(it.quando)} · {it.votos} {it.votos === 1 ? 'voto' : 'votos'}{it.placar ? ` · jogo ${it.placar}` : ''}</div>
+            </div>
+            <span style={{ color: 'var(--muted)' }}>{aberto === it.id ? '▲' : '▼'}</span>
+          </div>
+          {aberto === it.id && (
+            <div className="mural-big">
+              {it.foto ? <img src={it.foto} alt={it.nome} /> : <div className="gal-av" style={{ width: 120, height: 120, fontSize: 40, margin: '0 auto 8px', background: corAv }}>{ini(it.nome)}</div>}
+              <div className="gal-nome" style={{ fontSize: 18 }}>{emoji} {it.nome}</div>
+              <div className="m-meta">{dataBR(it.quando)} · {it.votos} {it.votos === 1 ? 'voto' : 'votos'}</div>
+            </div>
+          )}
         </div>
-      ) : <p className="rato-quote">Ninguém coroado ainda. Encerre uma partida pra abrir a votação.</p>}
-    </div>
+      ))}
+    </>
   )
 }
 
@@ -44,49 +58,30 @@ export default function PeDeRato({ participantes, votacao, historico, uid, onVot
   const aberta = !!votacao?.aberta
   const votosR = votacao?.votos || {}
   const votosC = votacao?.votosCraque || {}
-  const ultimo = historico?.[0]
+
+  const fmtPlacar = (h) => (h.placar ? `${h.placar.t1}x${h.placar.t2}` : '')
+  const orgulho = (historico || []).filter((h) => h.craqueNome).map((h) => ({
+    id: 'c' + h.id, nome: h.craqueNome, foto: h.craqueFotoURL, votos: h.craqueVotos, quando: h.rodadaEm, placar: fmtPlacar(h),
+  }))
+  const vergonha = (historico || []).filter((h) => h.ratoNome).map((h) => ({
+    id: 'r' + h.id, nome: h.ratoNome, foto: h.ratoFotoURL, votos: h.votos, quando: h.rodadaEm, placar: fmtPlacar(h),
+  }))
 
   return (
     <>
-      {/* CRAQUE */}
-      <div className="section-title">Craque da rodada</div>
-      <CampeaoCard tema="craque" ultimo={ultimo} campo="craqueNome" fotoCampo="craqueFotoURL" votosCampo="craqueVotos" />
-      <div className="section-title">Gerar o card do craque</div>
-      <CardPremio tema="craque" nomeInicial={ultimo?.craqueNome || 'Craque'} votosInicial={ultimo?.craqueNome ? `${ultimo.craqueVotos} votos da resenha` : ''} />
-
-      {/* PÉ DE RATO */}
-      <div className="section-title">Pé de rato da rodada</div>
-      <CampeaoCard tema="rato" ultimo={ultimo} campo="ratoNome" fotoCampo="ratoFotoURL" votosCampo="votos" />
-      <div className="section-title">Gerar o card do pé de rato</div>
-      <CardPremio tema="rato" nomeInicial={ultimo?.ratoNome || 'Pé de Rato'} votosInicial={ultimo?.ratoNome ? `${ultimo.votos} votos da resenha` : ''} />
-
-      {/* VOTAÇÃO */}
       {aberta ? (
         <>
           <Votacao titulo="🏆 Vote no CRAQUE · só quem jogou" participantes={participantes} votos={votosC} uid={uid} onVotar={onVotarCraque} cor="#F5B841" />
           <Votacao titulo="🐀 Vote no PÉ DE RATO · só quem jogou" participantes={participantes} votos={votosR} uid={uid} onVotar={onVotarRato} cor="#C22030" />
           <button className="btn danger" style={{ marginTop: 12 }} onClick={onCoroar}>Fechar votação e coroar</button>
-          <p className="hint">Isso encerra a noite: coroa o craque e o pé de rato, salva no histórico e soma tudo.</p>
+          <p className="hint">Ao coroar, os cards do craque e do pé de rato são gerados na hora pra você baixar.</p>
         </>
       ) : (
-        <p className="hint">A votação abre quando você <b>encerrar a partida</b> (aba Presença → Encerrar partida). Só quem jogou entra na votação.</p>
+        <p className="hint">A votação abre quando você <b>encerrar a partida</b>. Aqui ficam os murais — toque num nome pra ver a foto.</p>
       )}
 
-      {/* GALERIA DA VERGONHA */}
-      {historico?.length > 0 && (
-        <>
-          <div className="section-title">Galeria da vergonha</div>
-          {historico.filter((h) => h.ratoNome).map((h) => (
-            <div className="gal-row" key={h.id}>
-              {h.ratoFotoURL ? <img src={h.ratoFotoURL} alt={h.ratoNome} /> : <span className="gal-av">{ini(h.ratoNome)}</span>}
-              <div className="gal-info">
-                <div className="gal-nome">🐀 {h.ratoNome}</div>
-                <div className="gal-meta">{dataBR(h.rodadaEm)} · {h.votos} {h.votos === 1 ? 'voto' : 'votos'}</div>
-              </div>
-            </div>
-          ))}
-        </>
-      )}
+      <Mural titulo="⭐ Mural do orgulho" itens={orgulho} emoji="⭐" corAv="#F5B841" />
+      <Mural titulo="🐀 Mural da vergonha" itens={vergonha} emoji="🐀" corAv="#e5484d" />
     </>
   )
 }

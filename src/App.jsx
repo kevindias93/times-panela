@@ -9,6 +9,7 @@ import PeDeRato from './components/PeDeRato'
 import EncerrarPartida from './components/EncerrarPartida'
 import Historico from './components/Historico'
 import Importar from './components/Importar'
+import CardPremio from './components/CardPremio'
 import { IconPresenca, IconTimes, IconRanking, IconPremio, IconHistorico } from './components/Icons'
 import { sortearTimes, maxTimes, faltando, ROTULO_POSICAO, mediaHab, qtdHab } from './lib/sorteio'
 import logo from './assets/logo.png'
@@ -85,6 +86,7 @@ export default function App() {
   const [abaCadastro, setAbaCadastro] = useState(null)
   const [editando, setEditando] = useState(null)
   const [encerrando, setEncerrando] = useState(false)
+  const [coroacao, setCoroacao] = useState(null) // premiados da última coroação (tela de cards)
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -136,8 +138,8 @@ export default function App() {
     // usa a média das avaliações da galera como habilidade
     const confs = confirmados.map((p) => ({ ...p, habilidade: mediaHab(p) }))
     const { times, banco } = sortearTimes(confs)
-    const trim = (arr) => arr.map((p) => ({ id: p.id, nome: p.nome, posicao: p.posicao, fotoURL: p.fotoURL || '' }))
-    const timesLimpos = times.map((t) => ({ id: t.id, forca: t.forca, jogadores: trim(t.jogadores) }))
+    const trim = (arr) => (arr || []).map((p) => ({ id: p.id, nome: p.nome, posicao: p.posicao, fotoURL: p.fotoURL || '' }))
+    const timesLimpos = times.map((t) => ({ id: t.id, forca: t.forca, jogadores: trim(t.jogadores), banco: trim(t.banco) }))
     try {
       await setDoc(SORTEIO_REF, { gerado: true, times: timesLimpos, banco: trim(banco), nTimes: times.length })
       setAba('times')
@@ -217,7 +219,11 @@ export default function App() {
     jogadores.filter((j) => !j.avulso && j.confirmado).forEach((j) => batch.update(doc(db, 'jogadores', j.id), { confirmado: false }))
     batch.set(SORTEIO_REF, { gerado: false, times: [], banco: [], nTimes: 0 })
     batch.set(VOTACAO_REF, { aberta: false, votos: {}, votosCraque: {} })
-    try { await batch.commit(); setAba('historico') }
+    try {
+      await batch.commit()
+      setCoroacao({ rato, craque })
+      setAba('coroacao')
+    }
     catch (e) { console.error(e); alert('Não consegui encerrar a noite.\nCódigo: ' + (e?.code || '?')) }
   }
 
@@ -303,6 +309,25 @@ export default function App() {
 
       {aba === 'ranking' && <Ranking jogadores={jogadores} />}
       {aba === 'rato' && <PeDeRato participantes={participantes} votacao={votacao} historico={historico} uid={uid} onVotarRato={votar} onVotarCraque={votarCraque} onCoroar={coroar} />}
+      {aba === 'coroacao' && coroacao && (
+        <>
+          <div className="section-title">Premiados da rodada · baixe e manda no grupo</div>
+          {coroacao.craque?.id && (
+            <>
+              <div className="section-title">⭐ Craque: {coroacao.craque.nome}</div>
+              <CardPremio tema="craque" nomeInicial={coroacao.craque.nome} votosInicial={`${coroacao.craque.max} ${coroacao.craque.max === 1 ? 'voto' : 'votos'} da resenha`} fotoInicial={coroacao.craque.foto} />
+            </>
+          )}
+          {coroacao.rato?.id && (
+            <>
+              <div className="section-title">🐀 Pé de rato: {coroacao.rato.nome}</div>
+              <CardPremio tema="rato" nomeInicial={coroacao.rato.nome} votosInicial={`${coroacao.rato.max} ${coroacao.rato.max === 1 ? 'voto' : 'votos'} da resenha`} fotoInicial={coroacao.rato.foto} />
+            </>
+          )}
+          {!coroacao.craque?.id && !coroacao.rato?.id && <p className="hint">Ninguém foi votado nessa rodada.</p>}
+          <button className="btn primary" onClick={() => { setCoroacao(null); setAba('historico') }}>Concluir</button>
+        </>
+      )}
       {aba === 'historico' && (<><div className="section-title">Histórico de jogos</div><Historico historico={historico} /></>)}
 
       <nav className="nav"><div className="nav-inner">

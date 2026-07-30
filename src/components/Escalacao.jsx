@@ -58,12 +58,15 @@ export default function Escalacao({ times, banco }) {
                 </div>
               ))}
             </div>
-            <div className="gp-foot">Força {time.forca} · {time.jogadores.length} jogadores</div>
+            <div className="gp-foot">
+              <span className="gp-banco">{time.banco?.length ? <><b>Banco:</b> {time.banco.map((b) => b.nome.split(' ')[0]).join(', ')}</> : ''}</span>
+              <span>Força {time.forca} · {time.jogadores.length} jogadores</span>
+            </div>
           </div>
         )
       })}
 
-      {banco?.length > 0 && (
+      {banco?.length > 0 && !times.some((t) => t.banco?.length) && (
         <>
           <div className="section-title">No banco</div>
           <div className="chips">

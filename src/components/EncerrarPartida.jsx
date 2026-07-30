@@ -5,7 +5,7 @@ import logo from '../assets/logo.png'
 
 // Encerra a partida: placar, foto do time (com resultado) e avaliação dos jogadores.
 export default function EncerrarPartida({ times, onEncerrar, onCancelar }) {
-  const participantes = times.flatMap((t) => t.jogadores)
+  const participantes = times.flatMap((t) => [...t.jogadores, ...(t.banco || [])])
   const [g1, setG1] = useState(0)
   const [g2, setG2] = useState(0)
   const [arq, setArq] = useState(null)
@@ -32,23 +32,29 @@ export default function EncerrarPartida({ times, onEncerrar, onCancelar }) {
   }
   async function desenhar() {
     const cv = canvasRef.current; if (!cv) return
-    const ctx = cv.getContext('2d'); const W = 1080, H = 1080
+    const ctx = cv.getContext('2d')
     if (document.fonts?.ready) await document.fonts.ready
+    const W = 1080, FAIXA = 300
+    const img = fotoRef.current
+    // a foto entra INTEIRA (altura acompanha a proporção); nada de corte nas pontas
+    const fh = img ? Math.max(400, Math.round(W * (img.height / img.width))) : 700
+    const H = fh + FAIXA
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H }
     ctx.fillStyle = '#0A1A30'; ctx.fillRect(0, 0, W, H)
-    if (fotoRef.current) cover(ctx, fotoRef.current, 0, 0, W, H)
-    else { ctx.fillStyle = '#10233F'; ctx.fillRect(0, 0, W, H); ctx.fillStyle = '#8FA6C8'; ctx.font = '40px Inter'; ctx.textAlign = 'center'; ctx.fillText('Escolha a foto do time', W / 2, H / 2) }
-    // faixa inferior
-    const gr = ctx.createLinearGradient(0, H - 420, 0, H); gr.addColorStop(0, 'rgba(10,26,48,0)'); gr.addColorStop(1, 'rgba(10,26,48,.95)')
-    ctx.fillStyle = gr; ctx.fillRect(0, H - 420, W, 420)
+    if (img) ctx.drawImage(img, 0, 0, W, fh)
+    else { ctx.fillStyle = '#10233F'; ctx.fillRect(0, 0, W, fh); ctx.fillStyle = '#8FA6C8'; ctx.font = '40px Inter'; ctx.textAlign = 'center'; ctx.fillText('Escolha a foto do time', W / 2, fh / 2) }
+    // faixa do resultado (abaixo da foto, sem cobrir ninguém)
+    ctx.fillStyle = '#0A1A30'; ctx.fillRect(0, fh, W, FAIXA)
+    ctx.fillStyle = '#F5B841'; ctx.fillRect(0, fh, W, 6)
     ctx.textAlign = 'center'
-    ctx.font = '52px Anton'; ctx.fillStyle = '#F5B841'
-    ctx.fillText('PANELLA FC', W / 2, H - 250)
-    ctx.font = '150px Anton'; ctx.fillStyle = '#fff'
-    ctx.fillText(`${g1}  X  ${g2}`, W / 2, H - 110)
-    ctx.font = '40px Inter'; ctx.fillStyle = '#F3E9CC'
+    ctx.font = '44px Anton'; ctx.fillStyle = '#F5B841'
+    ctx.fillText('PANELLA FC', W / 2, fh + 70)
+    ctx.font = '120px Anton'; ctx.fillStyle = '#fff'
+    ctx.fillText(`${g1}  X  ${g2}`, W / 2, fh + 190)
+    ctx.font = '36px Inter'; ctx.fillStyle = '#F3E9CC'
     const txt = vencedor === 'empate' ? 'Empate na resenha' : `Vitória do Time ${vencedor === 'time1' ? '1' : '2'}`
-    ctx.fillText(txt, W / 2, H - 48)
-    if (logoRef.current) { const lw = 120, lh = lw * logoRef.current.naturalHeight / logoRef.current.naturalWidth; ctx.drawImage(logoRef.current, W - lw - 34, H - lh - 30, lw, lh) }
+    ctx.fillText(txt, W / 2, fh + 250)
+    if (logoRef.current) { const lw = 110, lh = lw * logoRef.current.naturalHeight / logoRef.current.naturalWidth; ctx.drawImage(logoRef.current, W - lw - 30, fh + (FAIXA - lh) / 2, lw, lh) }
   }
   function escolherFoto(e) {
     const f = e.target.files?.[0]; if (!f) return

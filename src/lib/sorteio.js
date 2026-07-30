@@ -71,6 +71,12 @@ export function sortearTimes(confirmados) {
     })
   }
   const banco = confirmados.filter((p) => m.livres.has(p.id))
+  // distribui o banco entre os times (alternado), pra cada lado ter suas reservas
+  banco.forEach((p, i) => {
+    const t = times[i % nTimes]
+    if (!t.banco) t.banco = []
+    t.banco.push(p)
+  })
   return { times, banco, nTimes }
 }
 
