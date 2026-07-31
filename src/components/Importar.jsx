@@ -5,11 +5,11 @@ import { db, auth, garantirLogin } from '../firebase'
 // Jogadores do Panella FC (nome + vitórias da imagem). Posição entra como MEI;
 // é só ajustar depois no ✎ de cada um.
 const JOGADORES = [
-  ['Diego', 9], ['Rafael', 8], ['José', 7], ['Vinicius', 7], ['Moises', 7],
-  ['Marcelo', 6], ['João', 6], ['Fructo', 6], ['Michael', 5], ['Renan', 5],
-  ['Timello', 5], ['Edu', 5], ['Rafinha', 5], ['Amauri', 4], ['Markin', 4],
-  ['Pedro', 4], ['Japa', 4], ['Britto', 3], ['Danilo', 3], ['Lezim', 3],
-  ['Mario', 3], ['Kevin', 2], ['Eder', 1], ['Fabio', 1], ['Gui', 1],
+  ['Diego', 0], ['Rafael Ferreira', 0], ['José', 0], ['Vinicius', 0], ['Moises', 0],
+  ['Marcelo', 0], ['João', 0], ['Fructo', 0], ['Michael', 0], ['Renan', 0],
+  ['Timello', 0], ['Edu', 0], ['Rafinha', 0], ['Amauri', 0], ['Markim', 0],
+  ['Pedro', 0], ['Japa', 0], ['Britto', 0], ['Danilo', 0], ['Lezim', 0],
+  ['Mario', 0], ['Kevin', 0], ['Eder', 0], ['Fabio', 0], ['Gui', 0],
 ]
 
 export default function Importar({ existentes = [], onPronto }) {
